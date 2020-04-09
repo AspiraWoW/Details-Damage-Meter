@@ -477,8 +477,14 @@ local function CreatePluginFrames (data)
 		local NewTarget = _UnitName ("target")
 		if (NewTarget and not _UnitIsFriend ("player", "target")) then
 			target = NewTarget
+			ThreatMeter.UpdateWindowTitle (NewTarget)
+			Threater()
+	elseif (NewTarget and _UnitIsFriend ("player", "target") and not _UnitIsFriend ("player", "targettarget")) then
+		target = _UnitName("playertargettarget")
+		ThreatMeter.UpdateWindowTitle (target)
 			Threater()
 		else
+			ThreatMeter.UpdateWindowTitle (false)
 			ThreatMeter:HideBars()
 		end
 	end
@@ -623,6 +629,9 @@ function ThreatMeter:OnEvent (_, event, ...)
 
 	if (event == "PLAYER_TARGET_CHANGED") then
 		ThreatMeter:TargetChanged()
+
+	elseif ( event == "UNIT_TARGET" ) then
+		ThreatMeter:TargetChanged()	
 	
 	elseif (event == "PLAYER_REGEN_DISABLED") then
 		ThreatMeter.Actived = true
@@ -667,6 +676,7 @@ function ThreatMeter:OnEvent (_, event, ...)
 				ThreatMeterFrame:RegisterEvent ("PLAYER_TARGET_CHANGED")
 				ThreatMeterFrame:RegisterEvent ("PLAYER_REGEN_DISABLED")
 				ThreatMeterFrame:RegisterEvent ("PLAYER_REGEN_ENABLED")
+				ThreatMeterFrame:RegisterUnitEvent("UNIT_TARGET", "target")
 
 				--> Saved data
 				ThreatMeter.saveddata = saveddata or {}
